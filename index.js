@@ -14,6 +14,10 @@ app.get('/login', (req, res) => {
     res.send('Hello Login')
 })
 
+app.get('/youtube', (req, res) => {
+    res.send('Padh na')
+})
+
 app.listen(process.env.PORT, () => {
     console.log(`Example app listening on port ${process.env.PORT}!`)
 })
