@@ -6,7 +6,6 @@ import { ApiResponse } from "../utils/ApiRespone.js";
 
 const registerUser = asyncHandler(async (req, res) => {
     const { fullname, username, email, password } = req.body;
-    console.log(email);
 
     if (!fullname || !username || !email || !password) {
         throw new ApiError(400, "All fields are required");
@@ -22,6 +21,8 @@ const registerUser = asyncHandler(async (req, res) => {
 
     const avatarLocalPath = req.files?.avatar?.[0]?.path;
     const coverImageLocalPath = req.files?.coverImage?.[0]?.path;
+
+    console.log(req.files);
 
 
     if (!avatarLocalPath) {
@@ -46,7 +47,7 @@ const registerUser = asyncHandler(async (req, res) => {
         coverImage: coverImage.url,
         username: username.toLowerCase(),
         email,
-        password
+        password,
     });
 
     const createdUser = await User.findById(user._id).select(
