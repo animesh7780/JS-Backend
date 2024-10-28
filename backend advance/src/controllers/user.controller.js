@@ -192,9 +192,66 @@ const refreshUserToken = asyncHandler(async (req, res) => {
     }
 })
 
+const changePassword = asyncHandler(async (req, res) => {
+    const { oldPassword, newPassword } = req.body
+
+    const user = await User.findById(req.user._id)
+
+    if (!user) {
+        throw new ApiError(404, "User not found")
+    }
+
+    const isPasswordCorrect = await user.isPasswordCorrect(oldPassword)
+    if (!isPasswordCorrect) {
+        throw new ApiError(400, "Old password is incorrect")
+    }
+
+    user.password = newPassword
+    await user.save({ validateBeforeSave: false })
+    return res.status(200).json(new ApiResponse
+        (200,
+            "Password changed successfully"
+        ))
+
+})
+
+const getCurrentUser = asyncHandler(async (req, res) => {
+    return res.status(200).json(200, req.user, "User fetched successfully")
+})
+
+const updateUserName = asyncHandler(async (req, res) => {
+    const { username, fullname, email, newUsername } = req.body
+
+    if (!fullname || !username || !email) {
+        throw new ApiError(400, "All fields are required")
+    }
+
+    const user = await User.findById(req.user._id)
+
+    if (!user) {
+        throw new ApiError(404, "User not found")
+    }
+
+    user.username = newUsername
+    const sameUsername = await User.findOne({ username: newUsername })
+    if (sameUsername) {
+        throw new ApiError(400, "Username already exists")
+    }
+    await user.save({ validateBeforeSave: false })
+
+    return res.status(200).json(new ApiResponse
+        (200,
+            "Username changed successfully"
+        ))
+
+})
+
 export {
     registerUser,
     loginUser,
     logoutUser,
-    refreshUserToken
+    refreshUserToken,
+    changePassword,
+    getCurrentUser,
+    updateUserName
 };
